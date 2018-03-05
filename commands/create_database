@@ -1,3 +1,8 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend create_database" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend create_database" 
+
+#!/bin/bash
+export DBname
+read -p "Enter Your database Name : " DBname
+mkdir -p -v ~/database/$DBname
