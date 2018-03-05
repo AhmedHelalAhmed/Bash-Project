@@ -1,0 +1,3 @@
+echo "you are in database " $database_name
+echo "you are in table " $table_name
+echo "in commend use_database" 
