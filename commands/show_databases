@@ -1,3 +1,17 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend show_databases" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend show_databases" 
+databases_directory=$HOME"/database"
+
+if [ -d $databases_directory ]
+then
+	databases_names="$(ls $databases_directory)"
+	if [ "$databases_names" == "" ] 
+	then
+		echo "Empty databases"
+	else
+		ls $databases_directory
+	fi
+else
+	echo "no databases yet"
+fi
