@@ -3,12 +3,14 @@
 #echo "in commend use_database" 
 #!/bin/bash
 #database -> not logic name name it as databases
+
+
 read -p "Enter the name of database to use : " database_name_user_input
 input_database_name=$HOME"/database/"$database_name_user_input
 
 if [ -d $input_database_name ]
 then
-	database_name=$database_name_user_input
+	export database_name=$database_name_user_input
 	echo "SUCCESSFULLY : "$database_name" now used"
 else
 	echo "ERROR : databse not found"

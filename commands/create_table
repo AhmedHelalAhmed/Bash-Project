@@ -1,3 +1,157 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend create_table" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend create_table" 
+
+#!/bin/bash
+function createTable {
+ 
+ while true ; do
+ 	
+ 	#statements
+echo $database_name
+  echo -e "Table Name: \c"
+  read tableName
+  
+  if [[ -f $HOME/database/$database_name/$tableName ]]; then
+    echo "table already existed ,choose another name"
+   else
+   	break
+  fi
+ done
+
+  echo -e "Number of Columns: \c"
+  
+  read colsNum
+  
+  counter=1
+  sep=":"
+  rSep="\n"
+  pKey=""
+  Dvalue=""
+  Null=""
+  unique=""
+  metaData=""
+  
+  while [ $counter -le $colsNum ]
+  do
+    echo -e "Name of Column No.$counter: \c"
+    read colName
+
+    echo -e "Type of Column $colName: "
+    
+    select var in "int" "str"
+    
+    do
+      case $var in
+        int ) colType="int";break;;
+        str ) colType="str";break;;
+        * ) echo "Wrong Choice" ;;
+      esac
+    done
+
+#--------------------Primary Key -------------#
+
+    if [[ $pKey == "" ]]; then
+      echo -e "Make PrimaryKey ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) pKey="PK";
+          metaData+=$colName$sep$colType$sep$pKey;
+          break;;
+          no )
+          metaData+=$colName$sep$colType$sep""
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+    else
+      metaData+=$colName$sep$colType$sep""
+    fi
+
+
+    #--------------------null option--------------#
+    
+      echo -e "Make it not null ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) Null="null";
+          metaData+=$sep$Null;
+          break;;
+          no ) Null="";
+          metaData+=$sep$Null
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+       #--------------------Defualt value--------------#
+    
+      echo -e "put Defualt value ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) 
+		read -p "Set your Defualt Value" value
+          Dvalue=$value;
+          metaData+=$sep$Dvalue;
+          break;;
+          no ) Dvalue="";
+          metaData+=$sep$Dvalue
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+       #--------------------Defualt value--------------#
+    
+      echo -e "Is it unique ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) 
+          unique="unique"
+          metaData+=$sep$unique;
+          break;;
+          no ) unique="";
+          metaData+=$sep$unique
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+
+
+
+    if [[ $counter == $colsNum ]]; then
+      temp=$temp$colName
+    else
+      temp=$temp$colName$sep
+    fi
+    ((counter++))
+  
+    metaData+=$rSep
+  done
+
+
+  METAFILE=~/database/$database_name/.$tableName
+  # echo $METAFILE
+  touch $METAFILE
+  echo -e $metaData  >> $METAFILE
+ 
+  DATAFILE=~/database/$database_name/$tableName
+  touch $DATAFILE
+
+ # echo -e $temp >> $DATAFILE
+  
+
+  if [[ $? == 0 ]]
+  then
+    echo "Table Created Successfully"
+  else
+    echo "Error Creating Table $tableName"
+  fi
+}
+
+createTable

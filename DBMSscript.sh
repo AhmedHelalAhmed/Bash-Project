@@ -2,9 +2,31 @@
 
 export database_name
 export table_name
+<<<<<<< HEAD
 
 database_name="database_name"
 table_name="database_table"
+=======
+database_name="test _datebase"
+table_name="test _table"
+
+use_database()
+{
+
+  read -p "Enter the name of database to use : " database_name_user_input
+  input_database_name=$HOME"/database/"$database_name_user_input
+
+  if [ -d $input_database_name ]
+  then
+    database_name=$database_name_user_input
+    echo "SUCCESSFULLY : "$database_name" now used"
+  else
+    echo "ERROR : databse not found"
+  fi
+}
+
+
+>>>>>>> 6483335928a4b92e9878a4b4202ac4da7846d94f
 while true 
 do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
@@ -24,8 +46,7 @@ case $user_choice_1 in
     echo "Your database has been created successfully"
     ;;
     2 )
-    ./commands/use_database
-    echo "Swithed to `$databaseName`"
+    use_database
     #TODo here will be another manu
     while true
     do
