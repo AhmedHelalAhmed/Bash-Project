@@ -2,8 +2,9 @@
 
 export database_name
 export table_name
-database_name="test _datebase"
-table_name="test _table"
+
+database_name="database_name"
+table_name="database_table"
 while true 
 do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  

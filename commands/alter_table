@@ -1,3 +1,35 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend alter_table" 
+#! /bin/bash
+
+database_name="fady"
+echo $database_name
+
+function ulterTable() {
+  echo $database_name
+   read -p "enter table you would like to alter" table
+   test=$HOME"/database/"$database_name/$table
+   if [ -f $test ] 
+   then 
+      echo "1) change table name"
+      echo "2) add a new field"
+      echo "3) delete a field"
+      echo "4) change data type of field"
+      read -p "choose the option you need :" choice
+      case $choice in
+         1) read -p "enter new table name :" newtable
+            mv $HOME"/database/"$database_name/$table $newtable  
+           ;;
+         2)  
+           ;;
+         3)  
+           ;;
+         4)  
+           ;;
+         *) echo "wrong choice" 
+           ;;
+      esac 
+   else
+      echo "table not found"
+   fi  
+} 
+
+ulterTable
