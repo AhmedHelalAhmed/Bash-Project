@@ -1,19 +1,89 @@
 #echo "you are in database " $database_name
 #echo "you are in table " $table_name
 #echo "in commend add_record" 
+
+
+database_name="Ahmed" #this will be deleted
+
+#---------- to get the name of the table ---------#
+while true
+do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
 echo "      M E N U - A D D R E C O R D"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  echo "Enter
-     1 set table name
-     2 set value of id
-     3 set value of name
-     4 set value of track
-     0 go to revious main
+echo "Enter table name
 *-------------------------------------*"
+read -p "table name : " table_name
+table_path=$HOME/database/$database_name/$table_name
+if [ -f $table_path ]
+then
+	#echo 'table exist'
+	break
+fi
+if [ $table_name == 0 ]
+then
+	#if the user forget the name of the table
+	break
+fi
+echo 'ERROR : table not exist try again ! or 0 to return the previous menu'
+done
+#---------- to get the name of the table ---------#
+#---------- read meta data for the table ---------#
+#awk 'BEGIN { FS=":"} { if($1==""){print "1empty"} else {print $1;}  if($2==""){print "2empty"} else {print $2;} if($3==""){print "3empty"} else {print $3;} if($4==""){print "4empty"} else {print $4;} if($5==""){print "5empty"} else {print $5;} if($6==""){print "6empty"} else {print $6;} }' $HOME/database/$database_name/.$table_name
+myarray=( `awk 'BEGIN { FS=":"} { if($1!=""){print $1" ";} }' $HOME/database/$database_name/.$table_name` )
+# echo ${myarray[0]}
+# echo ${myarray[1]}
+# echo ${myarray[2]}
+# echo ${myarray[@]} #elements as sequence
+# echo ${#myarray[@]} #number
 
-read -p "Your choice :" user_input
+#---------- read meta data for the table ---------#
+declare -A mydata
+#---------- to Enter the data for the table ---------#
+# step=1
+while true
+do
+	option=1 
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+	echo "      M E N U - A D D R E C O R D"
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	echo "Enter"
+	for field_name in ${myarray[@]}
+	do
+	if ! [[ ${mydata[$field_name]} ]]
+	then	
+	#echo "Not exist"
+	mydata[$field_name]=""
+	fi
 
+	echo "     ($option) $field_name" :  ${mydata[$field_name]}
+
+	option=$(( $option+1 ))
+	done
+	echo "     (#) commit"
+	echo "*-------------------------------------*"
+	read -p "your choice > " user_choice
+
+	temp=1
+    for field_name in ${myarray[@]}
+	do
+	if [ $temp == $user_choice ]
+	then	
+	read -p "$field_name : " user_input
+	mydata[$field_name]=$user_input
+	fi
+	temp=$(( $temp+1 ))
+	done
+
+
+step=$(( $step+1 ))
+
+# if [ $step == 3 ]
+# then
+# 	break
+# fi
+
+done
 
 
 
