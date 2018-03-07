@@ -80,7 +80,27 @@ do
 
 	if [ $indicator != 1 ]
 	then
-		echo "user choice is commit let's verify his data"
+		#echo "user choice is commit let's verify his data"
+	    for field_name in ${myarray[@]}
+		do
+			#awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $1 " test " field_name_awk;} }' $HOME/database/$database_name/.$table_name
+
+			datatype_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $2; } }' $HOME/database/$database_name/.$table_name`
+			primary_key_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $3; } }' $HOME/database/$database_name/.$table_name` 
+			null_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $4; } }' $HOME/database/$database_name/.$table_name` 
+			default_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $5; } }' $HOME/database/$database_name/.$table_name` 
+			uniqueness_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $6; } }' $HOME/database/$database_name/.$table_name` 
+
+
+echo $datatype_status	
+echo $primary_key_status
+echo $null_status
+echo $default_status
+echo $uniqueness_status		
+
+		break
+		done
+
 	fi
 
 step=$(( $step+1 ))
