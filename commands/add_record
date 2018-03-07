@@ -1,3 +1,22 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend add_record" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend add_record" 
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+echo "      M E N U - A D D R E C O R D"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "Enter
+     1 set table name
+     2 set value of id
+     3 set value of name
+     4 set value of track
+     0 go to revious main
+*-------------------------------------*"
+
+read -p "Your choice :" user_input
+
+
+
+
+
+
+
