@@ -80,9 +80,7 @@ do
 
 	if [ $indicator != 1 ]
 	then
-		#echo "user choice is commit let's verify his data"
-
-		
+		echo "user choice is commit let's verify his data"
 	fi
 
 step=$(( $step+1 ))
