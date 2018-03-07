@@ -64,17 +64,26 @@ do
 	echo "*-------------------------------------*"
 	read -p "your choice > " user_choice
 
-	temp=1
+	indicator=1
+	#for put the value in the fit position in the associative array
     for field_name in ${myarray[@]}
 	do
-	if [ $temp == $user_choice ]
-	then	
-	read -p "$field_name : " user_input
-	mydata[$field_name]=$user_input
-	fi
-	temp=$(( $temp+1 ))
+		if [ $indicator == $user_choice ]
+		then	
+		read -p "$field_name : " user_input
+		mydata[$field_name]=$user_input
+		indicator=1 #the commit option not chosen
+		break
+		fi
+	indicator=$(( $indicator+1 ))
 	done
 
+	if [ $indicator != 1 ]
+	then
+		#echo "user choice is commit let's verify his data"
+
+		
+	fi
 
 step=$(( $step+1 ))
 
