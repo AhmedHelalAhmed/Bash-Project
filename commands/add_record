@@ -1,3 +1,228 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend add_record" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend add_record" 
+
+
+#database_name="ahmedhelal" #this will be deleted
+number_pattern='^[0-9]+$'
+#---------- to get the name of the table ---------#
+while true
+do
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+echo "      M E N U - A D D R E C O R D"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Enter table name
+*-------------------------------------*"
+read -p "table name : " table_name
+table_path=$HOME/database/$database_name/$table_name
+if [ -f $table_path ]
+then
+	#echo 'table exist'
+	break
+fi
+if [ $table_name == 0 ]
+then
+	#if the user forget the name of the table
+	break
+fi
+echo 'ERROR : table not exist try again ! or 0 to return the previous menu'
+done
+#---------- to get the name of the table ---------#
+#---------- read meta data for the table ---------#
+#awk 'BEGIN { FS=":"} { if($1==""){print "1empty"} else {print $1;}  if($2==""){print "2empty"} else {print $2;} if($3==""){print "3empty"} else {print $3;} if($4==""){print "4empty"} else {print $4;} if($5==""){print "5empty"} else {print $5;} if($6==""){print "6empty"} else {print $6;} }' $HOME/database/$database_name/.$table_name
+myarray=( `awk 'BEGIN { FS=":"} { if($1!=""){print $1" ";} }' $HOME/database/$database_name/.$table_name` )
+# echo ${myarray[0]}
+# echo ${myarray[1]}
+# echo ${myarray[2]}
+# echo ${myarray[@]} #elements as sequence
+# echo ${#myarray[@]} #number
+
+#---------- read meta data for the table ---------#
+declare -A mydata
+#---------- to Enter the data for the table ---------#
+# step=1
+while true
+do
+	option=1 
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+	echo "      M E N U - A D D R E C O R D"
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	echo "Enter"
+	for field_name in ${myarray[@]}
+	do
+	if ! [[ ${mydata[$field_name]} ]]
+	then	
+	#echo "Not exist"
+	mydata[$field_name]=""
+	fi
+
+	echo "     ($option) $field_name" :  ${mydata[$field_name]}
+
+	option=$(( $option+1 ))
+	done
+	echo "     (#) commit"
+	echo "*-------------------------------------*"
+	read -p "your choice > " user_choice
+	
+	error=1 #let there is error
+	error_validation=0 #let there is no validation error
+
+
+	#check for user input
+	if [[ $user_choice =~ $number_pattern && $user_choice -gt 0 && $user_choice -lt $option ]] #if the user input is number
+	then
+		error=0 #there is no error
+	fi
+
+	indicator=1
+	#for put the value in the fit position in the associative array
+    for field_name in ${myarray[@]}
+	do
+		if [ $indicator == $user_choice ]
+		then	
+		read -p "$field_name : " user_input
+		mydata[$field_name]=$user_input
+		indicator=1 #the commit option not chosen
+		break
+		fi
+	indicator=$(( $indicator+1 ))
+	done
+
+	if [ $indicator != 1 -a $user_choice == "#" ]
+	then
+		#echo "user choice is commit let's verify his data"
+	    for field_name in ${myarray[@]}
+		do
+			#awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $1 " test " field_name_awk;} }' $HOME/database/$database_name/.$table_name
+			datatype_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $2; } }' $HOME/database/$database_name/.$table_name`
+			primary_key_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $3; } }' $HOME/database/$database_name/.$table_name` 
+			null_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $4; } }' $HOME/database/$database_name/.$table_name` 
+			default_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $5; } }' $HOME/database/$database_name/.$table_name` 
+			uniqueness_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $6; } }' $HOME/database/$database_name/.$table_name` 
+
+			# check for default value #
+			if [[ $default_status ]]
+			then
+				#echo $field_name" : default : "$default_status
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					mydata[$field_name]=$default_status
+				fi
+			fi
+			# check for default value #			
+			# check for datatype #
+			if [ $datatype_status == "str" ]
+			then
+				if [[ ${mydata[$field_name]} =~ $number_pattern ]]
+				then
+					echo "ERROR || field : "$field_name" ==> data must be a string"
+					error_validation=1
+				fi
+				#echo $field_name" datatype : string"
+
+			elif [ $datatype_status == "int" ]
+			then
+				if ! [[ ${mydata[$field_name]} =~ $number_pattern ]]
+				then
+					echo "ERROR || field : "$field_name" ==> data must be a number"
+					error_validation=1
+				fi
+				#echo $field_name" datatype : integer"
+			else
+				echo "ERROR : in "$field_name" in datatype"
+				error_validation=1
+			fi
+			# check for datatype #
+
+			# check for primary key #
+			if [[ $primary_key_status ]]
+			then
+				#check if the data is null or not
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> primary key can not be null"
+					error_validation=1
+				fi
+				#awk check if the data exist or not if exist it return found
+				data_found_in_table=`awk -v data="${mydata[$field_name]}" 'BEGIN { FS=":"} { if(data==$1){ print "found" } }' $HOME/database/$database_name/$table_name`
+				if ! [[ $data_found_in_table == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> primary key must be unique"
+					error_validation=1
+				fi
+				#echo $field_name" : primary key"
+			fi
+			# check for primary key #
+			# check for null #
+			if ! [[ $null_status ]]
+			then
+				#check if the data is null or not
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> can not be null"
+					error_validation=1
+				fi
+				#echo $field_name" : Not null"
+			fi
+			# check for null #
+			# check for uniqueness #
+			if [[ $uniqueness_status ]]
+			then
+				#echo $field_name" : unique"
+				#awk check if the data exist or not if exist it return found
+				data_found_in_table=`awk -v data="${mydata[$field_name]}" 'BEGIN { FS=":"} { if(data==$1){ print "found" } }' $HOME/database/$database_name/$table_name`
+				if ! [[ $data_found_in_table == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> must be unique"
+					error_validation=1
+				fi				
+			fi
+			# check for uniqueness #
+
+			# echo $datatype_status	
+			# echo $primary_key_status
+			# echo $null_status
+			# echo $default_status
+			# echo $uniqueness_status	
+				
+		done
+		#user input is right in #
+		error=0 #there is no error
+	fi
+
+	#check for user input
+	if [[ $error != 0 ]]
+	then
+		echo "ERROR : invalid input"
+	elif [[ $user_choice == "#" ]]
+	then
+		if [[ $error_validation != 0 ]]
+		then
+			echo "STATUS : Validation error"
+		else
+			#for make the user input as one line to insert in the the table
+			record_as_line=""
+		    for field_name in ${myarray[@]}
+			do
+				record_as_line="$record_as_line${mydata[$field_name]}:" 
+			done
+			record_as_line=${record_as_line:0:-1} #ot remove the last : in the record
+			echo $record_as_line >>$table_path #to append to the file			
+			echo "STATUS : Record added successfully"
+			break
+		fi
+	fi
+# step=$(( $step+1 ))
+
+# if [ $step == 3 ]
+# then
+# 	break
+# fi
+
+done
+
+
+
+
+
+
