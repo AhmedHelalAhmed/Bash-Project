@@ -1,3 +1,108 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend alter_table" 
+#! /bin/bash
+
+echo $database_name
+
+function ulterTable() {
+  echo $database_name
+   read -p "enter table you would like to alter" table
+   data=$HOME"/database/"$database_name/$table
+   metaD=$HOME"/database/"$database_name/.$table
+   if [ -f $data ] 
+   then 
+      echo "1) change table name"
+      echo "2) add a new field"
+      echo "3) delete a field"
+      echo "4) change data type of field"
+      read -p "choose the option you need :" choice
+      case $choice in
+         1) read -p "enter new table name :" newtable
+            mv $data  $HOME"/database/"$database_name/$newtable
+            mv $metaD  $HOME"/database/"$database_name/.$newtable   
+           ;;
+         2)   sep=":"
+              rsep="\n"
+              value=0
+              read -p "enter field name :" field
+              echo "type of cloumn :"
+              select var in "int" "str"
+              do 
+              case $var in
+                 int) $datatype="int"
+                    break
+                    ;; 
+                 str) $datatype="str"
+                    break
+                    ;; 
+                 *) echo "wrong choice" 
+                    ;;
+              esac
+              done   
+              declare $( awk 'BEGIN { FS=":" ; NR>=2 }{ if($3 == NULL){ $value=1 }  }'  $mytest)
+              if [ $value  == 1 ]
+              then 
+               echo "make primary key ?"
+               select var in "1) yes" "2) no"
+               do
+                 case $var in
+                  1) pkey="pk"
+                      ;;
+                  2) pkey=""
+                      ;;
+                  *) echo "wrong choice" 
+                      ;;
+                 esac 
+               done  
+              fi 
+              echo "make it null or not" 
+              select var in "1) yes" "2)no" 
+              do
+               case $var in
+                 1) null="null"
+                    ;;
+                 2) null="not null"
+                    ;;
+                 *) echo "wrong choice"
+                    ;;  
+               esac
+              done 
+              echo "add default value ?"
+              select var in "1) yes" "2) no"
+              do 
+               case $var in
+                1) read -p "add value" defaultValue
+                   default=$defaultValue
+                   ;;
+                2) default=""
+                   ;;
+                *) echo "wrong choice"
+                   ;; 
+               esac 
+              done
+              echo "make it unique ?"
+              select var in "1) yes" "2) no"
+              do 
+                case $var in 
+                1) unique="unique"
+                    ;;
+                2) unique=""
+                   ;;
+                *) echo "wrong choice" 
+                esac
+              done
+            $metadata=$field$sep$datatype$sep$pkey$sep$null$sep$default$sep$unique
+            echo -e $metadata >> .$mytest
+           ;;
+         3)  
+           ;;
+         4)  
+           ;;
+         *) echo "wrong choice" 
+            ulterTable
+           ;;
+      esac 
+   else
+      echo "table not found"
+   fi  
+} 
+
+ulterTable

@@ -2,6 +2,7 @@
 
 export database_name
 export table_name
+
 database_name="test _datebase"
 table_name="test _table"
 
@@ -19,6 +20,7 @@ use_database()
     echo "ERROR : databse not found"
   fi
 }
+
 
 
 while true 
