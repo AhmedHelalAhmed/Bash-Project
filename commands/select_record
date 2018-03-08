@@ -1,3 +1,70 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend select_record" 
+# echo "you are in database " $database_name
+# echo "you are in table " $table_name
+# echo "in commend select_record" 
+#database_name="ahmedhelal"
+#table_name="test"
+#table_path=$HOME"/database/"$database_name/$table_name
+#---------- to get the name of the table ---------#
+while true
+do
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+echo "      M E N U - S E L E C T"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Enter table name
+*-------------------------------------*"
+read -p "table name : " table_name
+table_path=$HOME/database/$database_name/$table_name
+if [ -f $table_path ]
+then
+	#echo 'table exist'
+	break
+fi
+if [ $table_name == 0 ]
+then
+	#if the user forget the name of the table
+	break
+fi
+echo 'ERROR : table not exist try again ! or 0 to return the previous menu'
+done
+#---------- to get the name of the table ---------#
+myarray=( `awk 'BEGIN { FS=":"} { if($1!=""){print $1" ";} }' $HOME/database/$database_name/.$table_name` )
+while true
+do
+	option=1 
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+	echo "      M E N U - S E L E C T"
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	echo "Choose"
+	for field_name in ${myarray[@]}
+	do
+	echo "     ($option) $field_name" 
+	option=$(( $option+1 ))
+	done
+	echo "*-------------------------------------*"
+	read -p "your choice > " input_user
+	error=1 #let there is error
+	#check for user input
+	if [[ $input_user -gt 0 && $input_user -lt $option ]] #if the user input is number
+	then
+		error=0 #there is no error
+	fi
+	#check for user input
+	if [[ $error != 0 ]]
+	then
+		echo "ERROR : invalid input"
+	else
+		read -p "Regex > " input_regex 
+		
+		test=`awk  -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":" }  { if ($user_select_field ~ user_regex) { print $0 } }  END { }' $table_path`  
+	
+		if [[ $test == "" ]]
+		then
+			echo "no match found"
+		else
+			awk  -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":" }  { if ($user_select_field ~ user_regex) { print $0 } }  END { }' $table_path
+		fi
+	fi
+
+done
+
+
