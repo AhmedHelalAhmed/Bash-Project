@@ -3,8 +3,8 @@
 #echo "in commend add_record" 
 
 
-database_name="Ahmed" #this will be deleted
-
+database_name="ahmedhelal" #this will be deleted
+number_pattern='^[0-9]+$'
 #---------- to get the name of the table ---------#
 while true
 do
@@ -63,6 +63,15 @@ do
 	echo "     (#) commit"
 	echo "*-------------------------------------*"
 	read -p "your choice > " user_choice
+	
+	error=1 #let there is error
+
+
+	#check for user input
+	if [[ $user_choice =~ $number_pattern && $user_choice -gt 0 && $user_choice -lt $option ]] #if the user input is number
+	then
+		error=0 #there is no error
+	fi
 
 	indicator=1
 	#for put the value in the fit position in the associative array
@@ -78,32 +87,97 @@ do
 	indicator=$(( $indicator+1 ))
 	done
 
-	if [ $indicator != 1 ]
+	if [ $indicator != 1 -a $user_choice == "#" ]
 	then
 		#echo "user choice is commit let's verify his data"
 	    for field_name in ${myarray[@]}
 		do
 			#awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $1 " test " field_name_awk;} }' $HOME/database/$database_name/.$table_name
-
 			datatype_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $2; } }' $HOME/database/$database_name/.$table_name`
 			primary_key_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $3; } }' $HOME/database/$database_name/.$table_name` 
 			null_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $4; } }' $HOME/database/$database_name/.$table_name` 
 			default_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $5; } }' $HOME/database/$database_name/.$table_name` 
 			uniqueness_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $6; } }' $HOME/database/$database_name/.$table_name` 
+			
+			# check for datatype #
+			if [ $datatype_status == "str" ]
+			then
+				if [[ ${mydata[$field_name]} =~ $number_pattern ]]
+				then
+					echo "ERROR || field : "$field_name"_data must be a string"
+				fi
+				#echo $field_name" datatype : string"
 
+			elif [ $datatype_status == "int" ]
+			then
+				if ! [[ ${mydata[$field_name]} =~ $number_pattern ]]
+				then
+					echo "ERROR || field : "$field_name"_data must be a number"
+				fi
+				#echo $field_name" datatype : integer"
+			else
+				echo "ERROR : in "$field_name" in datatype"
+			fi
+			# check for datatype #
+			# check for primary key #
+			if [[ $primary_key_status ]]
+			then
+				#echo $field_name" : primary key"
+				echo ""
+			else
+				#echo $field_name" : not primary key"
+				echo ""
+			fi
+			# check for primary key #
+			# check for null #
+			if [[ $null_status ]]
+			then
+				#echo $field_name" : null"
+				echo ""
+			else
+				#echo $field_name" : Not null"
+				echo ""
+				
+			fi
+			# check for null #
+			# check for default value #
+			if [[ $default_status ]]
+			then
+				#echo $field_name" : default : "$default_status
+				echo ""
+			else
+				#echo $field_name" : no default"
+				echo ""
+			fi
+			# check for default value #
+			# check for uniqueness #
+			if [[ $uniqueness_status ]]
+			then
+				#echo $field_name" : unique"
+				echo ""
+			else
+				#echo $field_name" : not unique"
+				echo ""
+			fi
+			# check for uniqueness #
 
-echo $datatype_status	
-echo $primary_key_status
-echo $null_status
-echo $default_status
-echo $uniqueness_status		
-
-		break
+			# echo $datatype_status	
+			# echo $primary_key_status
+			# echo $null_status
+			# echo $default_status
+			# echo $uniqueness_status	
+				
 		done
-
+		#user input is right in #
+		error=0 #there is no error
 	fi
 
-step=$(( $step+1 ))
+	#check for user input
+	if [[ $error != 0 ]]
+	then
+		echo "ERROR : invalid input"
+	fi
+# step=$(( $step+1 ))
 
 # if [ $step == 3 ]
 # then
