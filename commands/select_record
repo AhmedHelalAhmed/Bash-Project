@@ -1,9 +1,7 @@
 # echo "you are in database " $database_name
 # echo "you are in table " $table_name
 # echo "in commend select_record" 
-#database_name="ahmedhelal"
-#table_name="test"
-#table_path=$HOME"/database/"$database_name/$table_name
+
 #---------- to get the name of the table ---------#
 while true
 do
@@ -59,13 +57,19 @@ do
 	
 		if [[ $test == "" ]]
 		then
-			echo "no match found"
+			echo "no match found . . choose then enter .* to show all data"
 		else
 			#this for header
-			awk 'BEGIN { FS=":";ORS=" "} { if($1!=""){print $1;} } End {  }' $HOME/database/$database_name/.$table_name 
+			awk 'BEGIN { FS=":";ORS=" ";header="<html>         <head>     <!-- Required meta tags -->    <meta charset=\"utf-8\">    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">    <!-- Bootstrap CSS -->    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" integrity=\"sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm\" crossorigin=\"anonymous\"> <title>Select Result</title>    </head>    <body> <div class=\" container \" style=\" margin-top: 30;\"> <div class=\"card\"> <div class=\"card-body\"> <h5 class=\"card-title text-center\">THE RESULT</h5> <p class=\"card-text\"><table class=\"table table-hover table-dark \"> <thead> <tr> ";print header } { if($1!=""){print "<th scope=\"col\">"$1"</th>";} } End { print "</tr> </thead>" }' $HOME/database/$database_name/.$table_name >$HOME/Result.html
+			option=$(($option-1))
 			#this for data
-			awk -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";print"\n";ORS="\n";  }  { if ($user_select_field ~ user_regex) { print $0 } }  END { }' $table_path
+			awk -v field_options_number="$option" -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";counter=0;print"\n";ORS="\n";print "<tbody>"  }  { if ($user_select_field ~ user_regex) { counter++;print "<tr>";for (i=1;i<=field_options_number;i++){ print "<td>"$i"</td>" } };print"</tr>" }  END { footer=" </tbody> </table> </p> <p class=\"card-text\"><small class=\"text-muted\"> "counter" record (s)</small></p>  </p> <p class=\"card-text\"><small class=\"text-muted\"> <a href=\"https://github.com/AhmedHelalAhmed/Bash-Project\">The project in Github</a> </small></p></div></div><!-- Optional JavaScript -->    <!-- jQuery first, then Popper.js, then Bootstrap JS -->    <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" integrity=\"sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q\" crossorigin=\"anonymous\"></script>    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" integrity=\"sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl\" crossorigin=\"anonymous\"></script></body></html>";print footer}' $table_path >> $HOME/Result.html
+			#to open the file in default browser
+			xdg-open $HOME/Result.html &
+			echo "continue"
+			break
 		fi
+
 	fi
 
 done
