@@ -99,13 +99,23 @@ do
 			null_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $4; } }' $HOME/database/$database_name/.$table_name` 
 			default_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $5; } }' $HOME/database/$database_name/.$table_name` 
 			uniqueness_status=`awk -v field_name_awk="$field_name" 'BEGIN { FS=":"} { if( $1==field_name_awk ){ print $6; } }' $HOME/database/$database_name/.$table_name` 
-			
+
+			# check for default value #
+			if [[ $default_status ]]
+			then
+				#echo $field_name" : default : "$default_status
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					mydata[$field_name]=$default_status
+				fi
+			fi
+			# check for default value #			
 			# check for datatype #
 			if [ $datatype_status == "str" ]
 			then
 				if [[ ${mydata[$field_name]} =~ $number_pattern ]]
 				then
-					echo "ERROR || field : "$field_name"_data must be a string"
+					echo "ERROR || field : "$field_name" ==> data must be a string"
 					error_validation=1
 				fi
 				#echo $field_name" datatype : string"
@@ -114,7 +124,7 @@ do
 			then
 				if ! [[ ${mydata[$field_name]} =~ $number_pattern ]]
 				then
-					echo "ERROR || field : "$field_name"_data must be a number"
+					echo "ERROR || field : "$field_name" ==> data must be a number"
 					error_validation=1
 				fi
 				#echo $field_name" datatype : integer"
@@ -123,45 +133,49 @@ do
 				error_validation=1
 			fi
 			# check for datatype #
+
 			# check for primary key #
 			if [[ $primary_key_status ]]
 			then
+				#check if the data is null or not
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> primary key can not be null"
+					error_validation=1
+				fi
+				#awk check if the data exist or not if exist it return found
+				data_found_in_table=`awk -v data="${mydata[$field_name]}" 'BEGIN { FS=":"} { if(data==$1){ print "found" } }' $HOME/database/$database_name/$table_name`
+				if ! [[ $data_found_in_table == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> primary key must be unique"
+					error_validation=1
+				fi
 				#echo $field_name" : primary key"
-				echo ""
-			else
-				#echo $field_name" : not primary key"
-				echo ""
 			fi
 			# check for primary key #
 			# check for null #
-			if [[ $null_status ]]
+			if ! [[ $null_status ]]
 			then
-				#echo $field_name" : null"
-				echo ""
-			else
+				#check if the data is null or not
+				if [[ ${mydata[$field_name]} == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> can not be null"
+					error_validation=1
+				fi
 				#echo $field_name" : Not null"
-				echo ""
-				
 			fi
 			# check for null #
-			# check for default value #
-			if [[ $default_status ]]
-			then
-				#echo $field_name" : default : "$default_status
-				echo ""
-			else
-				#echo $field_name" : no default"
-				echo ""
-			fi
-			# check for default value #
 			# check for uniqueness #
 			if [[ $uniqueness_status ]]
 			then
 				#echo $field_name" : unique"
-				echo ""
-			else
-				#echo $field_name" : not unique"
-				echo ""
+				#awk check if the data exist or not if exist it return found
+				data_found_in_table=`awk -v data="${mydata[$field_name]}" 'BEGIN { FS=":"} { if(data==$1){ print "found" } }' $HOME/database/$database_name/$table_name`
+				if ! [[ $data_found_in_table == "" ]]
+				then
+					echo "ERROR | field : "$field_name" ==> must be unique"
+					error_validation=1
+				fi				
 			fi
 			# check for uniqueness #
 
@@ -184,7 +198,7 @@ do
 	then
 		if [[ $error_validation != 0 ]]
 		then
-			echo "ERROR : validation error"
+			echo "STATUS : Validation error"
 		else
 			#for make the user input as one line to insert in the the table
 			record_as_line=""
@@ -194,7 +208,7 @@ do
 			done
 			record_as_line=${record_as_line:0:-1} #ot remove the last : in the record
 			echo $record_as_line >>$table_path #to append to the file			
-			echo "Record added"
+			echo "STATUS : Record added successfully"
 			break
 		fi
 	fi
