@@ -61,7 +61,10 @@ do
 		then
 			echo "no match found"
 		else
-			awk  -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":" }  { if ($user_select_field ~ user_regex) { print $0 } }  END { }' $table_path
+			#this for header
+			awk 'BEGIN { FS=":";ORS=" "} { if($1!=""){print $1;} } End {  }' $HOME/database/$database_name/.$table_name 
+			#this for data
+			awk -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";print"\n";ORS="\n";  }  { if ($user_select_field ~ user_regex) { print $0 } }  END { }' $table_path
 		fi
 	fi
 
