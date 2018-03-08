@@ -1,3 +1,20 @@
+#! /bin/bash
+
 echo "you are in database " $database_name
 echo "you are in table " $table_name
-echo "in commend drop_table" 
+echo "in commend drop_table"
+
+function dropTable() {
+    read -p "enter table you would like to drop" table
+    data=$HOME"/database/"$database_name/$table
+    metaD=$HOME"/database/"$database_name/.$table
+    if [ -f $data ]
+    then
+       rm -f $data
+       rm -f $metaD  
+    else
+      echo "table doesnot exist"
+    fi
+}
+
+dropTable 

@@ -2,11 +2,7 @@
 
 export database_name
 export table_name
-<<<<<<< HEAD
 
-database_name="database_name"
-table_name="database_table"
-=======
 database_name="test _datebase"
 table_name="test _table"
 
@@ -26,7 +22,7 @@ use_database()
 }
 
 
->>>>>>> 6483335928a4b92e9878a4b4202ac4da7846d94f
+
 while true 
 do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
