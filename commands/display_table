@@ -1,3 +1,22 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend display_table" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend display_table" 
+
+#!/bin/bash
+
+while true ;
+do
+read -p "Enter Table Name to display >>   " tableName
+
+if [[ ! -f $HOME/database/$database_name/$tableName ]]; then
+    echo "table not existed ,choose another name"
+   else
+   	break
+  fi
+ done
+
+echo "-------------------------------------------------------------------"
+echo "|   Field   |   Type   |    Key    |   Null   |  Defualt Value 	|" 
+echo "-------------------------------------------------------------------"
+
+awk -F: '{printf ("%10s%10s%10s%13s%10s\n", $1,$2,$3,$4,$5)}' ~/database/$database_name/.$tableName
