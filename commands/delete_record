@@ -1,3 +1,44 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend delete_record" 
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend delete_record" 
+
+DPATH=$HOME/database/$database_name
+#echo $DPATH/employee
+function deleteRecord {
+ while true ;
+ do
+  echo -e "Enter Table Name: \c"
+  read tName
+   if [[ ! -f $HOME/database/$database_name/$tName ]]; then
+    echo "table does not existed ,choose another name"
+   else
+   	break
+  fi
+ done
+  echo -e "Enter Condition Column name: \c"
+  read field
+  fid=$(awk -F:  '{if ($1 == "'$field'")  print  NR }' $DPATH/.$tName)
+
+  if [[ $fid == "" ]]
+  then
+  	#echo $fid
+  	#echo $DPATH/$tName
+    echo "Not Found"
+  else
+  	#echo $fid
+    echo -e "Enter Condition Value: \c"
+    read val
+    fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print '$val'}' $DPATH/$tName)
+    
+    if [[ $fval == "" ]]
+    then
+    	echo $fval
+    	echo "value not found"
+    else
+    awk -F: '$"'$fid'" != "'$val'"' $DPATH/$tName > $DPATH/output && mv $DPATH/output $DPATH/$tName
+    echo "Row has been deleted successfully"
+	fi
+  fi
+}
+
+deleteRecord

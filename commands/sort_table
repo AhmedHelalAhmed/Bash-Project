@@ -1,3 +1,114 @@
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend sort_table" 
+# echo "you are in database " $database_name
+# echo "you are in table " $table_name
+# echo "in commend sort_table" 
+#database_name="ahmedhelal"
+#table_name="test"
+
+#---------- to get the name of the table ---------#
+while true
+do
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+echo "      M E N U - S O R T"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Enter table name
+*-------------------------------------*"
+read -p "table name : " table_name
+table_path=$HOME/database/$database_name/$table_name
+if [ -f $table_path ]
+then
+	#echo 'table exist'
+	break
+fi
+if [ $table_name == 0 ]
+then
+	#if the user forget the name of the table
+	break
+fi
+echo 'ERROR : table not exist try again ! or 0 to return the previous menu'
+done
+#---------- to get the name of the table ---------#
+#---------- read meta data for the table ---------#
+myarray=( `awk 'BEGIN { FS=":"} { if($1!=""){print $1" ";} }' $HOME/database/$database_name/.$table_name` )
+#---------- read meta data for the table ---------#
+
+#---------- to Enter the data for the table ---------#
+
+while true
+do
+	option=1 
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+	echo "      M E N U - S O R T"
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	echo "Choose"
+	for field_name in ${myarray[@]}
+	do
+	echo "     ($option) $field_name" 
+	option=$(( $option+1 ))
+	done
+	echo "*-------------------------------------*"
+	read -p "your choice > " input_user
+	error=1 #let there is error
+	#check for user input
+	if [[ $input_user -gt 0 && $input_user -lt $option ]] #if the user input is number
+	then
+		error=0 #there is no error
+	fi
+	#check for user input
+	if [[ $error != 0 ]]
+	then
+		echo "ERROR : invalid input"
+	else
+
+		echo "     (1) ascend​ing" 
+		echo "     (2) descending" 
+		read -p "your choice > " input_user_aord
+		#assume the correctr input just for now in input_user_aord
+		if [[ $input_user_aord == 1 ]]
+		then
+			#a-z
+			datatype=`awk  -v user_input="$input_user" 'BEGIN { FS=":";count=0; }  { count++;if (user_input == count) { print $2 } } ' $HOME/database/$database_name/.$table_name`  
+			#check if the field str or number
+			if [ $datatype == "str" ]
+			then
+				#echo "string"
+				#for text
+				sort -t: -k$input_user  $table_path	-o $table_path
+				echo "STATUS : sorted successfully"
+				break
+			elif [ $datatype == "int" ]
+			then
+				#echo "integer"
+				#for number
+				sort -t: -k$input_user -n $table_path -o $table_path
+				echo "STATUS : sorted successfully"
+				break
+
+			fi
+
+		elif [[ $input_user_aord == 2 ]]
+		then
+			#z-a
+			datatype=`awk  -v user_input="$input_user" 'BEGIN { FS=":";count=0; }  { count++;if (user_input == count) { print $2 } } ' $HOME/database/$database_name/.$table_name`  
+			#check if the field str or number
+			if [ $datatype == "str" ]
+			then
+				#echo "string"
+				#for text
+				sort -t: -k$input_user -r $table_path -o $table_path	
+				echo "STATUS : sorted successfully"
+				break
+			elif [ $datatype == "int" ]
+			then
+				#echo "integer"
+				#for number
+				sort -t: -k$input_user -rn $table_path -o $table_path
+				echo "STATUS : sorted successfully"		
+				break	
+			fi
+		else
+			echo "STATUS : invalid input"	
+		fi
+	fi
+done
+
+

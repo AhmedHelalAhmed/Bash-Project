@@ -39,7 +39,6 @@ your choice : " user_choice_1
 case $user_choice_1 in
     1 )
     ./commands/create_database
-    echo "Your database has been created successfully"
     ;;
     2 )
     use_database

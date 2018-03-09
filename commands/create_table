@@ -52,7 +52,7 @@ echo $database_name
 #--------------------Primary Key -------------#
 
     if [[ $pKey == "" ]]; then
-      echo -e "Make PrimaryKey ? "
+      echo -e "Make Primary Key ? "
       select var in "yes" "no"
       do
         case $var in
@@ -67,12 +67,10 @@ echo $database_name
       done
     else
       metaData+=$colName$sep$colType$sep""
-    fi
-
-
-    #--------------------null option--------------#
+ 
+         #--------------------null option--------------#
     
-      echo -e "Make it not null ? "
+      echo -e "Is it accept null ? "
       select var in "yes" "no"
       do
         case $var in
@@ -88,12 +86,12 @@ echo $database_name
 
        #--------------------Defualt value--------------#
     
-      echo -e "put Defualt value ? "
+      echo -e "set Defualt value ? "
       select var in "yes" "no"
       do
         case $var in
           yes ) 
-		read -p "Set your Defualt Value" value
+    read -p "Set your Defualt Value >>  " value
           Dvalue=$value;
           metaData+=$sep$Dvalue;
           break;;
@@ -120,6 +118,14 @@ echo $database_name
           * ) echo "Wrong Choice" ;;
         esac
       done
+
+
+
+
+    fi
+
+
+ 
 
 
 

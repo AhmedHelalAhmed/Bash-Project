@@ -4,5 +4,12 @@
 
 #!/bin/bash
 export DBname
+DPATH=$HOME/database
 read -p "Enter Your database Name : " DBname
-mkdir -p -v ~/database/$DBname
+
+if [[ -d $DPATH/$DBname ]] ; then
+	echo "Database is already exist, use it or try another name"	
+else
+	mkdir -p -v ~/database/$DBname
+	echo "Database has been created successfully"
+fi
