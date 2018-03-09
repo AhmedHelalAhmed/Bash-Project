@@ -3,7 +3,7 @@
 #echo "in commend delete_record" 
 
 DPATH=$HOME/database/$database_name
-echo $DPATH/employee
+#echo $DPATH/employee
 function deleteRecord {
  while true ;
  do
@@ -17,14 +17,15 @@ function deleteRecord {
  done
   echo -e "Enter Condition Column name: \c"
   read field
-  fid=$(awk -F:  'BEGIN{counter=0}{if ($1 == "'$field'")  print  NR}' $DPATH/.$tName)
+  fid=$(awk -F:  '{if ($1 == "'$field'")  print  NR }' $DPATH/.$tName)
+
   if [[ $fid == "" ]]
   then
   	#echo $fid
   	#echo $DPATH/$tName
     echo "Not Found"
   else
-  	echo $fid
+  	#echo $fid
     echo -e "Enter Condition Value: \c"
     read val
     fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print '$val'}' $DPATH/$tName)
