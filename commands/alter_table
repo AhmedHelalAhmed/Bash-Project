@@ -21,81 +21,135 @@ function ulterTable() {
            ;;
          2)   sep=":"
               rsep="\n"
-              value=0
+              value=0    
               read -p "enter field name :" field
+              find=`sed -n -e "/$field/p" $metaD`
+              if [  -z "$find" ]
+              then
               echo "type of cloumn :"
               select var in "int" "str"
               do 
               case $var in
-                 int) $datatype="int"
+                 int) datatype="int"
                     break
                     ;; 
-                 str) $datatype="str"
+                 str) datatype="str"
                     break
                     ;; 
                  *) echo "wrong choice" 
                     ;;
               esac
-              done   
-              declare $( awk 'BEGIN { FS=":" ; NR>=2 }{ if($3 == NULL){ $value=1 }  }'  $mytest)
-              if [ $value  == 1 ]
+              done 
+              echo $value  
+              value=`awk 'BEGIN { FS=":" ; NR>=2 }{ if($3 == "pk"){ print 1 }  }' $metaD`
+              echo $value 
+              if [ "$value"  != 1 ]
               then 
                echo "make primary key ?"
-               select var in "1) yes" "2) no"
+               select var in "yes" "no"
                do
                  case $var in
-                  1) pkey="pk"
+                  yes) pkey="pk"
+                       break
                       ;;
-                  2) pkey=""
+                  no) pkey=""
+                       break  
                       ;;
                   *) echo "wrong choice" 
                       ;;
                  esac 
-               done  
+               done
+              else
+               echo "no primary key"  
               fi 
-              echo "make it null or not" 
-              select var in "1) yes" "2)no" 
+              echo "make it null or not ?" 
+              select var1 in "yes" "no" 
               do
-               case $var in
-                 1) null="null"
+               case $var1 in
+                 yes) null="null"
+                      break
                     ;;
-                 2) null="not null"
+                 no) null="not null"
+                     read -p "enter not null value" notnullvalue                     
+                     break 
                     ;;
                  *) echo "wrong choice"
                     ;;  
                esac
               done 
               echo "add default value ?"
-              select var in "1) yes" "2) no"
+              select var2 in "yes" "no"
               do 
-               case $var in
-                1) read -p "add value" defaultValue
-                   default=$defaultValue
-                   ;;
-                2) default=""
-                   ;;
+               case $var2 in
+                yes) read -p "add value" defaultValue
+                     default=$defaultValue
+                     break
+                     ;;
+                no) default=""
+                    break   
+                    ;;
                 *) echo "wrong choice"
                    ;; 
                esac 
               done
               echo "make it unique ?"
-              select var in "1) yes" "2) no"
+              select var3 in "yes" "no"
               do 
-                case $var in 
-                1) unique="unique"
+                case $var3 in 
+                yes) unique="unique"
+                     break
                     ;;
-                2) unique=""
+                no) unique=""
+                    break
                    ;;
                 *) echo "wrong choice" 
                 esac
               done
-            $metadata=$field$sep$datatype$sep$pkey$sep$null$sep$default$sep$unique
-            echo -e $metadata >> .$mytest
-           ;;
-         3)  
-           ;;
-         4)  
-           ;;
+            metadata=$field$sep$datatype$sep$pkey$sep$null$sep$default$sep$unique           
+            echo -e $metadata >> $metaD
+            sed -i -e "s/$/$sep/" $data 
+            else
+            echo "field already exist"
+            fi 
+            ;;
+         3) read -p "enter field you want to delete" field
+            lines=`awk -v a="$field" 'BEGIN{ FS=":" ; counter=0 ; flag=1 }{ if( $0 != "" && flag==1 ){ counter++ ;if( $1==a ){ flag=0 }  }} END{ print counter } ' $metaD`
+            echo $lines
+            myoutput=`awk -v a="$lines"  'BEGIN { FS=":" }{ gsub( $a,"" ) ; print $0 } ' $data`
+            echo "$myoutput" > $data
+            sed -i -e "s/://$lines" $data
+            sed -i -e "/$field/d" $metaD
+            if [ $? == 0 ]
+            then 
+              echo "deleted successfully"
+            else
+              echo "field not found"     
+            fi 
+            ;;
+         4) read -p "enter field you want to change its data type" field 
+            find=`sed -n -e "/$field/p" $metaD`
+            if [ ! -z "$find" ]
+            then
+              echo "enter new data type of field :"
+              select var in "int" "str" 
+              do 
+                case $var in 
+                  int) datatype="int"
+                       break
+                        ;;
+                  str) datatype="str"
+                       break
+                        ;; 
+                  *) echo "wrong choice" 
+                esac   
+              done   
+            myoutput=`awk -v a="$field" -v b="$datatype"  'BEGIN { FS=":" }{ if( $1 == a ){  gsub( $2 , b ) ; print $0 } }' $metaD` 
+            sed -i -e "/$field/d" $metaD
+            echo "$myoutput" >> $metaD 
+            else
+             echo "field not found"
+            fi
+            ;;
          *) echo "wrong choice" 
             ulterTable
            ;;
