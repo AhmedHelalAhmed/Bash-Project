@@ -57,10 +57,65 @@ echo $database_name
       do
         case $var in
           yes ) pKey="PK";
-          metaData+=$colName$sep$colType$sep$pKey;
+          metaData+=$colName$sep$colType$sep$pKey$sep$""$sep""$sep"unique";
           break;;
           no )
           metaData+=$colName$sep$colType$sep""
+
+
+               #--------------------null option--------------#
+    
+      echo -e "Is it accept null ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) Null="null";
+          metaData+=$sep$Null;
+          break;;
+          no ) Null="";
+          metaData+=$sep$Null
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+       #--------------------Defualt value--------------#
+    
+      echo -e "set Defualt value ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) 
+    read -p "Set your Defualt Value >>  " value
+          Dvalue=$value;
+          metaData+=$sep$Dvalue;
+          break;;
+          no ) Dvalue="";
+          metaData+=$sep$Dvalue
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+       #--------------------Defualt value--------------#
+    
+      echo -e "Is it unique ? "
+      select var in "yes" "no"
+      do
+        case $var in
+          yes ) 
+          unique="unique"
+          metaData+=$sep$unique;
+          break;;
+          no ) unique="";
+          metaData+=$sep$unique
+          break;;
+          * ) echo "Wrong Choice" ;;
+        esac
+      done
+
+
+
           break;;
           * ) echo "Wrong Choice" ;;
         esac
