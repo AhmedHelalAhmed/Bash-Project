@@ -21,14 +21,14 @@ function deleteRecord {
 
   if [[ $fid == "" ]]
   then
-  	#echo $fid
+  	echo $fid
   	#echo $DPATH/$tName
     echo "Not Found"
   else
-  	#echo $fid
+  	echo $fid
     echo -e "Enter Condition Value: \c"
     read val
-    fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print '$val'}' $DPATH/$tName)
+    fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print "'$val'"}' $DPATH/$tName)
     
     if [[ $fval == "" ]]
     then
