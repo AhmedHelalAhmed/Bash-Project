@@ -11,6 +11,7 @@ function ulterTable() {
       echo "2) add a new field"
       echo "3) delete a field"
       echo "4) change data type of field"
+      echo "5) return back to main menu"
       read -p "choose the option you need :" choice
       case $choice in
          1) read -p "enter new table name :" newtable
@@ -151,12 +152,15 @@ function ulterTable() {
              echo "field not found"
             fi
             ;;
+         5) exit
+            ;; 
          *) echo "wrong choice" 
             ulterTable
            ;;
       esac 
    else
       echo "table not found"
+      exit
    fi  
 } 
 
