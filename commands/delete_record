@@ -12,32 +12,32 @@ function deleteRecord {
    if [[ ! -f $HOME/database/$database_name/$tName ]]; then
     echo "table does not existed ,choose another name"
    else
-   	break
+        break
   fi
  done
-  echo -e "Enter Condition Column name: \c"
+  echo -e "Enter Column you would like to delete record from: \c"
   read field
   fid=$(awk -F:  '{if ($1 == "'$field'")  print  NR }' $DPATH/.$tName)
 
   if [[ $fid == "" ]]
   then
-  	echo $fid
-  	#echo $DPATH/$tName
+        echo $fid
+        #echo $DPATH/$tName
     echo "Not Found"
   else
-  	echo $fid
-    echo -e "Enter Condition Value: \c"
+        echo $fid
+    echo -e "Enter record Value: \c"
     read val
     fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print "'$val'"}' $DPATH/$tName)
-    
+
     if [[ $fval == "" ]]
     then
-    	echo $fval
-    	echo "value not found"
+        echo $fval
+        echo "value not found"
     else
     awk -F: '$"'$fid'" != "'$val'"' $DPATH/$tName > $DPATH/output && mv $DPATH/output $DPATH/$tName
     echo "Row has been deleted successfully"
-	fi
+        fi
   fi
 }
 

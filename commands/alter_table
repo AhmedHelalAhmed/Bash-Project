@@ -1,9 +1,7 @@
 #! /bin/bash
 
-echo $database_name
 
 function ulterTable() {
-  echo $database_name
    read -p "enter table you would like to alter" table
    data=$HOME"/database/"$database_name/$table
    metaD=$HOME"/database/"$database_name/.$table
@@ -13,6 +11,7 @@ function ulterTable() {
       echo "2) add a new field"
       echo "3) delete a field"
       echo "4) change data type of field"
+      echo "5) return back to main menu"
       read -p "choose the option you need :" choice
       case $choice in
          1) read -p "enter new table name :" newtable
@@ -40,9 +39,7 @@ function ulterTable() {
                     ;;
               esac
               done 
-              echo $value  
-              value=`awk 'BEGIN { FS=":" ; NR>=2 }{ if($3 == "pk"){ print 1 }  }' $metaD`
-              echo $value 
+              value=`awk 'BEGIN { FS=":" ; NR>=2 }{ if($3 == "pk"){ print 1 }  }' $metaD` 
               if [ "$value"  != 1 ]
               then 
                echo "make primary key ?"
@@ -60,71 +57,91 @@ function ulterTable() {
                  esac 
                done
               else
-               echo "no primary key"  
+               echo "primary key already exists"  
+              fi
+              if [ -z "$pkey" ] 
+              then
+                echo "make it null or not ?" 
+                select var1 in "yes" "no" 
+                do
+                  case $var1 in
+                    yes) null="null"
+                         break
+                         ;;
+                    no) read -p "enter not null value" notnullvalue
+                        null=$notnullvalue                     
+                        break 
+                         ;;
+                    *) echo "wrong choice"
+                         ;;  
+                  esac
+                done
+              else
+                null=""
               fi 
-              echo "make it null or not ?" 
-              select var1 in "yes" "no" 
-              do
-               case $var1 in
-                 yes) null="null"
-                      break
-                    ;;
-                 no) null="not null"
-                     read -p "enter not null value" notnullvalue                     
-                     break 
-                    ;;
-                 *) echo "wrong choice"
-                    ;;  
-               esac
-              done 
-              echo "add default value ?"
-              select var2 in "yes" "no"
-              do 
-               case $var2 in
-                yes) read -p "add value" defaultValue
-                     default=$defaultValue
-                     break
-                     ;;
-                no) default=""
-                    break   
-                    ;;
-                *) echo "wrong choice"
-                   ;; 
-               esac 
+              if [ -z "$pkey" ]
+              then
+                echo "add default value ?"
+                select var2 in "yes" "no"
+                do 
+                  case $var2 in
+                  yes) read -p "add value" defaultValue
+                       default=$defaultValue
+                       break
+                       ;;
+                  no) default=""
+                       break   
+                       ;;
+                  *) echo "wrong choice"
+                       ;; 
+                esac 
               done
-              echo "make it unique ?"
-              select var3 in "yes" "no"
-              do 
-                case $var3 in 
-                yes) unique="unique"
-                     break
-                    ;;
-                no) unique=""
-                    break
-                   ;;
-                *) echo "wrong choice" 
-                esac
-              done
+              else
+                default=""
+              fi
+              if [ -z "$pkey" ]
+              then  
+                echo "make it unique ?"
+                select var3 in "yes" "no"
+                do 
+                  case $var3 in 
+                  yes) unique="unique"
+                       break
+                       ;;
+                  no) unique=""
+                       break
+                       ;;
+                  *) echo "wrong choice" 
+                   esac
+                  done
+              else
+                unique="unique"
+              fi  
             metadata=$field$sep$datatype$sep$pkey$sep$null$sep$default$sep$unique           
             echo -e $metadata >> $metaD
-            sed -i -e "s/$/$sep/" $data 
+              if [ -z "$unique" ]
+              then
+                 sed -i -e "s/$/$default$sep/" $data
+              else
+                 sed -i -e "s/$/$sep/" $data
+              fi   
             else
             echo "field already exist"
             fi 
             ;;
          3) read -p "enter field you want to delete" field
-            lines=`awk -v a="$field" 'BEGIN{ FS=":" ; counter=0 ; flag=1 }{ if( $0 != "" && flag==1 ){ counter++ ;if( $1==a ){ flag=0 }  }} END{ print counter } ' $metaD`
-            echo $lines
-            myoutput=`awk -v a="$lines"  'BEGIN { FS=":" }{ gsub( $a,"" ) ; print $0 } ' $data`
-            echo "$myoutput" > $data
-            sed -i -e "s/://$lines" $data
-            sed -i -e "/$field/d" $metaD
-            if [ $? == 0 ]
-            then 
-              echo "deleted successfully"
+            find=`sed -n -e "/$field/p" $metaD`
+            if [ ! -z "$find"  ]
+            then
+               lines=`awk -v a="$field" 'BEGIN{ FS=":" ; counter=0 ; flag=1 }{ if( $0 != "" && flag==1 ){ counter++ ;if( $1==a ){ flag=0 }  }} END{ print counter } ' $metaD`
+               myoutput=`awk -v a="$lines"  'BEGIN { FS=":" }{ gsub( $a,"" ) ; print $0 } ' $data`
+               echo "$myoutput" > $data
+               sed -i -e "s/://$lines" $data
+               sed -i -e "/$field/d" $metaD
+               echo "deleted successfully"
             else
-              echo "field not found"     
-            fi 
+              echo "field not found"
+            fi
             ;;
          4) read -p "enter field you want to change its data type" field 
             find=`sed -n -e "/$field/p" $metaD`
@@ -150,12 +167,15 @@ function ulterTable() {
              echo "field not found"
             fi
             ;;
+         5) exit
+            ;; 
          *) echo "wrong choice" 
             ulterTable
            ;;
       esac 
    else
       echo "table not found"
+      exit
    fi  
 } 
 
