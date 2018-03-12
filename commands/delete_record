@@ -1,6 +1,4 @@
-#echo "you are in database " $database_name
-#echo "you are in table " $table_name
-#echo "in commend delete_record" 
+#! /bin/bash
 
 DPATH=$HOME/database/$database_name
 #echo $DPATH/employee
@@ -15,27 +13,26 @@ function deleteRecord {
    	break
   fi
  done
-  echo -e "Enter Condition Column name: \c"
+  echo -e "Enter Column you would like to delete record from: \c"
   read field
   fid=$(awk -F:  '{if ($1 == "'$field'")  print  NR }' $DPATH/.$tName)
 
   if [[ $fid == "" ]]
   then
-  	echo $fid
   	#echo $DPATH/$tName
     echo "Not Found"
   else
   	echo $fid
-    echo -e "Enter Condition Value: \c"
+    echo -e "Enter record Value: \c"
     read val
-    fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print "'$val'"}' $DPATH/$tName)
+    fval=`awk -v a="$fid" -v b="$val" 'BEGIN {FS=":"} { if( $a!= Null ){ tmp=match( $a , b ) ; if(tmp){ print $0 }  } }' $DPATH/$tName`
     
     if [[ $fval == "" ]]
     then
     	echo $fval
     	echo "value not found"
     else
-    awk -F: '$"'$fid'" != "'$val'"' $DPATH/$tName > $DPATH/output && mv $DPATH/output $DPATH/$tName
+    sed -i -e "/$fval/d" $DPATH/$tName
     echo "Row has been deleted successfully"
 	fi
   fi
