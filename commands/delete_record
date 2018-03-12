@@ -1,4 +1,6 @@
-#! /bin/bash
+#echo "you are in database " $database_name
+#echo "you are in table " $table_name
+#echo "in commend delete_record" 
 
 DPATH=$HOME/database/$database_name
 #echo $DPATH/employee
@@ -10,7 +12,7 @@ function deleteRecord {
    if [[ ! -f $HOME/database/$database_name/$tName ]]; then
     echo "table does not existed ,choose another name"
    else
-   	break
+        break
   fi
  done
   echo -e "Enter Column you would like to delete record from: \c"
@@ -19,23 +21,23 @@ function deleteRecord {
 
   if [[ $fid == "" ]]
   then
-  	#echo $DPATH/$tName
+        echo $fid
+        #echo $DPATH/$tName
     echo "Not Found"
   else
-  	echo $fid
+        echo $fid
     echo -e "Enter record Value: \c"
     read val
-    fval=`awk -v a="$fid" -v b="$val" 'BEGIN {FS=":"} { if( $a!= Null ){ tmp=match( $a , b ) ; if(tmp){ print $0 }  } }' $DPATH/$tName`
-    
+    fval=$(awk -F:  '{ if ($'$fid' == "'$val'") print "'$val'"}' $DPATH/$tName)
+
     if [[ $fval == "" ]]
     then
-    	echo $fval
-    	echo "value not found"
+        echo $fval
+        echo "value not found"
     else
-    sed -i -e "/$fval/d" $DPATH/$tName
+    awk -F: '$"'$fid'" != "'$val'"' $DPATH/$tName > $DPATH/output && mv $DPATH/output $DPATH/$tName
     echo "Row has been deleted successfully"
-	fi
+        fi
   fi
 }
 
-deleteRecord
