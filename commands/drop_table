@@ -1,8 +1,5 @@
 #! /bin/bash
 
-echo "you are in database " $database_name
-echo "you are in table " $table_name
-echo "in commend drop_table"
 
 function dropTable() {
     read -p "enter table you would like to drop" table
@@ -11,7 +8,8 @@ function dropTable() {
     if [ -f $data ]
     then
        rm -f $data
-       rm -f $metaD  
+       rm -f $metaD 
+       echo "table deleted successfully" 
     else
       echo "table doesnot exist"
     fi

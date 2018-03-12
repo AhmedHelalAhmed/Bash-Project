@@ -6,7 +6,8 @@ FILES=$HOME"/database/"$database_name/.*
 for f in $FILES
 do
   if [ -f $f  ]
-  then  
+  then 
+    echo $f 
     echo "--------------------------------------------------------------------"
     echo "     Field     |  Type  |  Key  |  Null  |  Defualt Value | Unique |"
     echo "--------------------------------------------------------------------"
