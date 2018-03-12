@@ -60,14 +60,73 @@ do
 			echo "no match found . . choose then enter .* to show all data"
 		else
 			#this for header
-			awk 'BEGIN { FS=":";ORS=" ";header="<html>         <head>     <!-- Required meta tags -->    <meta charset=\"utf-8\">    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">    <!-- Bootstrap CSS -->    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" integrity=\"sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm\" crossorigin=\"anonymous\"> <title>Select Result</title>    </head>    <body> <div class=\" container \" style=\" margin-top: 30;\"> <div class=\"card\"> <div class=\"card-body\"> <h5 class=\"card-title text-center\">THE RESULT</h5> <p class=\"card-text\"><table class=\"table table-hover table-dark \"> <thead> <tr> ";print header } { if($1!=""){print "<th scope=\"col\">"$1"</th>";} } End { print "</tr> </thead>" }' $HOME/database/$database_name/.$table_name >$HOME/Result.html
-			option=$(($option-1))
+			awk 'BEGIN { FS=":";ORS="          "; } { if($1!=""){printf "%s          ",$1} } ' $HOME/database/$database_name/.$table_name 
+			option=$(($option-1)) #just one time
 			#this for data
-			awk -v field_options_number="$option" -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";counter=0;print"\n";ORS="\n";print "<tbody>"  }  { if ($user_select_field ~ user_regex) { counter++;print "<tr>";for (i=1;i<=field_options_number;i++){ print "<td>"$i"</td>" } };print"</tr>" }  END { footer=" </tbody> </table> </p> <p class=\"card-text\"><small class=\"text-muted\"> "counter" record (s)</small></p>  </p> <p class=\"card-text\"><small class=\"text-muted\"> <a href=\"https://github.com/AhmedHelalAhmed/Bash-Project\">The project in Github</a> </small></p></div></div><!-- Optional JavaScript -->    <!-- jQuery first, then Popper.js, then Bootstrap JS -->    <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" integrity=\"sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q\" crossorigin=\"anonymous\"></script>    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" integrity=\"sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl\" crossorigin=\"anonymous\"></script></body></html>";print footer}' $table_path >> $HOME/Result.html
-			#to open the file in default browser
-			xdg-open $HOME/Result.html &
-			echo "continue"
-			break
+			awk -v field_options_number="$option" -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";;counter=0;print " " }  { if ($user_select_field ~ user_regex) { counter++;for (i=1;i<=field_options_number;i++){ printf "%s          ",$i };print""  } }  ' $table_path 
+			
+			while true
+			do
+				exit_menu=0
+				echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
+				echo "      M E N U - S E L E C T"
+				echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+				echo "would you like to print the result in :"
+				echo "(1) HTML page"
+				echo "(2) CSV file"
+				echo "(3) Select menu"
+				echo "(0) Main menu"
+				echo "*-------------------------------------*"
+				read -p "Your choice > " user_choice
+
+
+				if [ $user_choice == 1 ]
+				then
+					#echo "HTML"
+					#this for header
+					awk 'BEGIN { FS=":";ORS=" ";header="<html>         <head>     <!-- Required meta tags -->    <meta charset=\"utf-8\">    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">    <!-- Bootstrap CSS -->    <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" integrity=\"sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm\" crossorigin=\"anonymous\"> <title>Select Result</title>    </head>    <body> <div class=\" container \" style=\" margin-top: 30;\"> <div class=\"card\"> <div class=\"card-body\"> <h5 class=\"card-title text-center\">THE RESULT</h5> <p class=\"card-text\"><table class=\"table table-hover table-dark \"> <thead> <tr> ";print header } { if($1!=""){print "<th scope=\"col\">"$1"</th>";} } End { print "</tr> </thead>" }' $HOME/database/$database_name/.$table_name >$HOME/Result.html
+					# option=$(($option-1))
+		      		#this for data
+					awk -v field_options_number="$option" -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";counter=0;print"\n";ORS="\n";print "<tbody>"  }  { if ($user_select_field ~ user_regex) { counter++;print "<tr>";for (i=1;i<=field_options_number;i++){ print "<td>"$i"</td>" } };print"</tr>" }  END { footer=" </tbody> </table> </p> <p class=\"card-text\"><small class=\"text-muted\"> "counter" record (s)</small></p>  </p> <p class=\"card-text\"><small class=\"text-muted\"> <a href=\"https://github.com/AhmedHelalAhmed/Bash-Project\">The project in Github</a> </small></p></div></div><!-- Optional JavaScript -->    <!-- jQuery first, then Popper.js, then Bootstrap JS -->    <script src=\"https://code.jquery.com/jquery-3.2.1.slim.min.js\" integrity=\"sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN\" crossorigin=\"anonymous\"></script>    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" integrity=\"sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q\" crossorigin=\"anonymous\"></script>    <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" integrity=\"sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl\" crossorigin=\"anonymous\"></script></body></html>";print footer}' $table_path >> $HOME/Result.html
+					#to open the file in default browser
+					xdg-open $HOME/Result.html &
+					exit_menu=1
+					break
+				elif [ $user_choice == 2 ]
+				then
+					#echo "CSV"
+					#this for header
+					CSV_header=`awk 'BEGIN { FS=":"; } { if($1!=""){printf "%s:",$1} } ' $HOME/database/$database_name/.$table_name `
+					echo ${CSV_header::-1} > $HOME/Result.CSV
+
+					#i have to remove the last separator
+					# option=$(($option-1))
+					#this for data
+					awk -v field_options_number="$option" -v user_select_field="$input_user" -v user_regex="$input_regex" 'BEGIN { FS=":";counter=0 }  { if($user_select_field ~ user_regex) { counter++;print $i; }  }  ' $table_path >> $HOME/Result.CSV
+					exit_menu=1
+					break
+				elif [ $user_choice == 3 ]
+				then
+					echo "Select menu again"
+					break
+					exit_menu=0
+					break
+				elif [ $user_choice == 0 ]
+				then
+					echo "Main menu"
+					exit_menu=1
+					break
+				else
+					echo "ERROR : invalid input"
+				fi
+			done
+
+
+
+			if [ $exit_menu == 1 ]
+			then
+				break
+			fi
 		fi
 
 	fi

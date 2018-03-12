@@ -1,9 +1,11 @@
 # Bash-Project
 Bash Shell Scripting Project | DBMS 
 
+# How to to to commendline and execute the file DBMSscript.sh
+by the commend : ./DBMSscript.sh
+and follow the instructions
 
 ## Team Members:
-
-- Mahmoud Abdelmoneim
-- Ahmed Helal
-- Fady Elgawly
+- Ahmed Helal - AhmedHelalAhmed
+- Mahmoud Abdelmoneim - mahmoudadev
+- Fady Elgawly - fadyelgawly92

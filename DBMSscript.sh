@@ -16,8 +16,16 @@ use_database()
   then
     database_name=$database_name_user_input
     echo "SUCCESSFULLY : "$database_name" now used"
+    flag=true
+    break
   else
-    echo "ERROR : databse not found"
+    echo "ERROR : databse not found . . 0 to return the previous menu"
+    if [ $database_name_user_input == 0 ]
+    then
+      flag=false
+      break
+
+    fi
   fi
 }
 
@@ -38,12 +46,16 @@ your choice : " user_choice_1
 
 case $user_choice_1 in
     1 )
-    ./commands/create_database
+        ./commands/create_database
+
     ;;
     2 )
-    use_database
-    #TODo here will be another manu
     while true
+    do
+    use_database
+    done
+    #TODo here will be another manu
+    while $flag
     do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
 echo "   D A T A - M A N I P U L A T I O N"

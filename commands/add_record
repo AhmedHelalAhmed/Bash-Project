@@ -6,6 +6,7 @@
 #database_name="ahmedhelal" #this will be deleted
 number_pattern='^[0-9]+$'
 #---------- to get the name of the table ---------#
+
 while true
 do
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
@@ -18,11 +19,13 @@ table_path=$HOME/database/$database_name/$table_name
 if [ -f $table_path ]
 then
 	#echo 'table exist'
+	continue_flag=true
 	break
 fi
 if [ $table_name == 0 ]
 then
 	#if the user forget the name of the table
+	continue_flag=false
 	break
 fi
 echo 'ERROR : table not exist try again ! or 0 to return the previous menu'
@@ -41,7 +44,7 @@ myarray=( `awk 'BEGIN { FS=":"} { if($1!=""){print $1" ";} }' $HOME/database/$da
 declare -A mydata
 #---------- to Enter the data for the table ---------#
 # step=1
-while true
+while $continue_flag
 do
 	option=1 
 	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"  
