@@ -58,50 +58,65 @@ function ulterTable() {
                done
               else
                echo "primary key already exists"  
+              fi
+              if [ -z "$pkey" ] 
+              then
+                echo "make it null or not ?" 
+                select var1 in "yes" "no" 
+                do
+                  case $var1 in
+                    yes) null="null"
+                         break
+                         ;;
+                    no) read -p "enter not null value" notnullvalue
+                        null=$notnullvalue                     
+                        break 
+                         ;;
+                    *) echo "wrong choice"
+                         ;;  
+                  esac
+                done
+              else
+                null=""
               fi 
-              echo "make it null or not ?" 
-              select var1 in "yes" "no" 
-              do
-               case $var1 in
-                 yes) null="null"
-                      break
-                    ;;
-                 no) read -p "enter not null value" notnullvalue
-                     null=$notnullvalue                     
-                     break 
-                    ;;
-                 *) echo "wrong choice"
-                    ;;  
-               esac
-              done 
-              echo "add default value ?"
-              select var2 in "yes" "no"
-              do 
-               case $var2 in
-                yes) read -p "add value" defaultValue
-                     default=$defaultValue
-                     break
-                     ;;
-                no) default=""
-                    break   
-                    ;;
-                *) echo "wrong choice"
-                   ;; 
-               esac 
+              if [ -z "$pkey" ]
+              then
+                echo "add default value ?"
+                select var2 in "yes" "no"
+                do 
+                  case $var2 in
+                  yes) read -p "add value" defaultValue
+                       default=$defaultValue
+                       break
+                       ;;
+                  no) default=""
+                       break   
+                       ;;
+                  *) echo "wrong choice"
+                       ;; 
+                esac 
               done
-              echo "make it unique ?"
-              select var3 in "yes" "no"
-              do 
-                case $var3 in 
-                yes) unique="unique"
-                     break
-                    ;;
-                no) unique=""
-                    break
-                   ;;
-                *) echo "wrong choice" 
-                esac
-              done
+              else
+                default=""
+              fi
+              if [ -z "$pkey" ]
+              then  
+                echo "make it unique ?"
+                select var3 in "yes" "no"
+                do 
+                  case $var3 in 
+                  yes) unique="unique"
+                       break
+                       ;;
+                  no) unique=""
+                       break
+                       ;;
+                  *) echo "wrong choice" 
+                   esac
+                  done
+              else
+                unique="unique"
+              fi  
             metadata=$field$sep$datatype$sep$pkey$sep$null$sep$default$sep$unique           
             echo -e $metadata >> $metaD
               if [ -z "$unique" ]

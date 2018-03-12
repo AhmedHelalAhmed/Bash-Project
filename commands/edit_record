@@ -12,7 +12,6 @@ function editTable(){
      if [ ! -z "$find" ]
      then
        lines=`awk -v a="$field" 'BEGIN{ FS=":" ; counter=0 ; flag=1 }{ if( $0 != "" && flag==1 ){ counter++ ;if( $1==a ){ flag=0 }  }} END{ print counter } ' $metaD`
-       echo $lines
        read -p "enter old value" oldvalue
        read -p "enter new value" value
        output=`awk -v a="$value" -v b="$lines" -v c="$oldvalue"  'BEGIN { FS=":" } { if($b != Null) { tmp=match( $b , c ) ; if(tmp){ gsub($b,a); print $0 }else{ print $0 } } }' $data`
